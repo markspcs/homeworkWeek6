@@ -1,86 +1,54 @@
-const currentDaySpan = document.querySelector("#currentDay");
-const containerDiv = document.querySelector(".container");
-
-const intTime = moment().format("H")
-const inputHours = ["9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"];
-var currentTime = moment().format("h") + moment().format("A");
-var currentDate = moment().format("dddd MMMM Do");
+const apiKey = "166a433c57516f51dfab1f7edaed8413";
+const weatherSite = "https://api.openweathermap.org/data/2.5/forecast/daily?cnt=5&appid=" + apiKey + "&q=";
+const uvSite = "https://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey;
+const imgDir = "./images/";
 
 
-//Test if after 5pm then set to next day, and start next day at 9AM, and clear local storage
-if (intTime > 17 ) {
-   const formatTime = moment().format(moment.HTML5_FMT.DATE); 
-   var newTime = moment(formatTime).add(1, 'days');
-   currentDate = newTime.format('dddd MMMM Do');
-   currentTime = "9AM";
-   localStorage.removeItem("dayPlanner");
+// Icons https://openweathermap.org/weather-conditions
+// forecast https://api.openweathermap.org/data/2.5/forecast/daily?q=kansas+city&cnt=5&appid=166a433c57516f51dfab1f7edaed8413
+//
+var city="kansas+city"
+getWeather(city);
+
+
+
+////////////////////////////////////////
+function currentWeather(weatherObj){
+    let city = weatherObj.city.name;
+    let lat = weatherObj.city.coord.lat;
+    let long = weatherObj.city.coord.lon;
+    let fahrTemp = kelvToFahr(weatherObj.list[0].temp.day);
+    let humidity = weatherObj.list[0].humidity;
+    let icon = "./images/" + weatherObj.list[0].weather[0].icon + ".png";
+    let dateObj = new Date(weatherObj.list[0].dt * 1000);
+    let day = dateObj.getDate();
+    let month = dateObj.getMonth() + 1;
+    let year = dateObj.getFullYear();
+    
+    $("#city").text(city);
+    $("#date").text(month+"/"+day+"/"+year);
+    $("#icon").attr("src", icon);
+    console.log(city + " " + lat + " " + long + " " + fahrTemp + " " + humidity + " " + month +"/"+day+"/"+year);
 }
-var dateArr = currentDate.split(" ");
-//get items from local storage to present
-var obj = JSON.parse(localStorage.getItem("dayPlanner"));  
-
-
-// if current time is earlier than 9AM, then set to 9AM to start the day
-currentTime = (intTime < 9) ? "9AM": currentTime;
-
-// if the object hasn't existed before initialize it. 
-var dayPlanObj = (!obj) ? new Object : obj;
-currentDaySpan.textContent = dateArr[0] + ", " + dateArr[1] + " " + dateArr[2];
-
-var inputHoursIndex = inputHours.indexOf(currentTime);
-
-for(let i = 0; i < inputHours.length;i++){
-    let rowDiv = $("<div>");
-    $(".container").append(rowDiv)
-    rowDiv.addClass("row");
-
-    let hourDiv = $("<div>");
-    $(rowDiv).append(hourDiv);
-    hourDiv.addClass("hour col-sm-1").text(inputHours[i]);
-
-    let entryDiv = $("<div>");
-    $(rowDiv).append(entryDiv);
-
-    console.log(i + " " + inputHoursIndex);
-    //determine if it's the past present or current hour
-    switch(true){
-        case i < inputHoursIndex:
-            entryDiv.addClass("past col-sm-8");
-            break;
-        case i === inputHoursIndex:
-            entryDiv.addClass("present  col-sm-8");
-            break;
-        case i > inputHoursIndex:
-            entryDiv.addClass("future  col-sm-8");
-            break;
-    }
-
-    let textAreaBox = $("<textarea>");
-    $(entryDiv).append(textAreaBox);
-
-    let testHour = inputHours[i];
-    let entry = (dayPlanObj[testHour]) ? dayPlanObj[testHour] : "";
-    textAreaBox.val(entry);
-
-
-    let saveDiv = $("<div>");
-    $(rowDiv).append(saveDiv);
-    saveDiv.addClass("col-sm-1 btnDiv");
-
-    let saveBtn = $("<button>");
-    $(saveDiv).append(saveBtn);
-    $(saveBtn).addClass("saveBtn");
-    saveBtn.text("save");
-
-    $(saveBtn).click(function (){
-        saveItem(inputHours[i], textAreaBox.val());
-    });
-
+/////////////////////////////////////
+//convert kelvin to Fahrenheit, and return to 1 decimal point
+function kelvToFahr(kelvTemp){
+    fahrTemp = kelvTemp * 1.8 - 459.67;
+    return fahrTemp.toFixed(1);
 }
-////////////////////////////////
-// function that puts object into local storage only
-/////////////////////////////////////////////
-function saveItem(clickedHour, textValue) {
-    dayPlanObj[clickedHour] = textValue;
-    localStorage.setItem("dayPlanner", JSON.stringify(dayPlanObj));
+/////////////////////////////////////
+function getWeather(city){
+    $.ajax({
+        url: weatherSite + city,
+        method: "GET"
+      })
+        // We store all of the retrieved data inside of an object called "response"
+        .then(function(response) {
+          // Log the queryURL
+          console.log(weatherSite + apiKey);
+          // Log the resulting object
+          console.log(response);
+          currentWeather(response);
+        });
+        
 }

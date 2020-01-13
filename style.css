@@ -35,11 +35,15 @@ body {
   font-size: 20px;
 }
 #searchBox {
-  
+  display: inline;
 }
 #searchBtn {
   border: 0px;
   background-color: blue;
+  display: inline;
+}
+#searchBtn:hover{
+  box-shadow: 0px 0px 10px blue;
 }
 /* textarea{
   background: transparent;

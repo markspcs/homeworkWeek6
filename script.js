@@ -1,10 +1,8 @@
 const apiKey = "166a433c57516f51dfab1f7edaed8413";
-const weatherSite = "https://api.openweathermap.org/data/2.5/forecast/daily?cnt=5&appid=" + apiKey + "&q=";
+const weatherSite = "https://api.openweathermap.org/data/2.5/forecast/daily?cnt=6&appid=" + apiKey + "&q=";
 const uvSite = "https://api.openweathermap.org/data/2.5/uvi?appid=" + apiKey;
-const forecastSite = "https://api.openweathermap.org/data/2.5/forecast/daily?cnt=5&appid=166a433c57516f51dfab1f7edaed8413&q=";
+const forecastSite = "https://api.openweathermap.org/data/2.5/forecast/daily?cnt=6&appid=166a433c57516f51dfab1f7edaed8413&q=";
 const imgDir = "./images/";
-
-
 // Icons https://openweathermap.org/weather-conditions
 // forecast https://api.openweathermap.org/data/2.5/forecast/daily?q=kansas+city&cnt=5&appid=166a433c57516f51dfab1f7edaed8413
 // UV https://samples.openweathermap.org/data/2.5/uvi?lat=37.75&lon=-122.37&appid=b6907d289e10d714a6e88b30761fae22
@@ -12,9 +10,26 @@ var city = "kansas+city"
 getWeather(city);
 getForecast(city);
 
+/////////////////////////////////////////////
+//formats  5 day forecast to the bottom of the screen
+function forecastWeather(forecast) {
+  let dateObj = new Date(forecast.dt * 1000);
+  let day = dateObj.getDate();
+  let month = dateObj.getMonth() + 1;
+  let year = dateObj.getFullYear();
+  console.log(day + " " + month + " " + year);
+  console.log(forecast);
+  
+  let fcDiv = $("<div>");
+  let p = $("<p>");
+  $(".forecastBoxes").append(fcDiv);
+  let card = $(fcDiv).addClass("card forecastBox");
+  let cardBody = card.addClass("card-body");
+  cardBody.html("<h4 class='card-title'>" + month +"/" + day + "/" + year + "</h4>");
+  cardBody.append("<img class='boxIcon' src='" + imgDir + forecast.weather[0].icon + ".png' /><p>");
+  cardBody.append("Temp: " + kelvToFahr(forecast.temp.day) + " &#8457;<p>");
+  cardBody.append("Humidity: " + forecast.humidity + "%");
 
-function forecastWeather(forecastArr) {
-  console.log(forecastArr);
 }
 ///////////////////////////////
 //gets 5 day forecast from api, and call forecastWeather() and passes the array of days
@@ -24,7 +39,9 @@ function getForecast(city) {
     method: "GET"
   })
     .then(function (response) {
-      forecastWeather(response.list);
+      //forecastWeather(response.list);
+      response.list.shift();
+      response.list.forEach(forecastWeather);
     });
 }
 ////////////////////////////////////////

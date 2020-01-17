@@ -118,10 +118,25 @@ function currentWeather(weatherObj) {
   //$("#uv").append("followUp");
   console.log(city + " " + lat + " " + long + " " + fahrTemp + " " + humidity + " " + month + "/" + day + "/" + year);
   let uvObj = getUv(lat, long);
-  uvObj.then(uvIndex => $("#uv").html("UV Index: " + uvIndex.value));
+  uvObj.done(uvIndex => {$("#uv").html(uvIndex.value);colorUv(uvIndex.value) });
+  console.log(indexVal);
   //console.log(promis.then);
   //$("#uv").append(getUv(lat, long));
   return [lat, long];
+}
+//////////////////////////////////
+//
+function colorUv(uvValue){
+  let uvColor = "uvGreen";
+
+  if (uvValue > 7){
+    uvColor = "uvRed";
+  }
+  else if (uvValue > 4){
+    uvColor = "uvYellow";
+  }
+  $("#uv").removeClass();
+  $("#uv").addClass(uvColor);
 }
 /////////////////////////////////////
 //This returns the promise of the called uv site

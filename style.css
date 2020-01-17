@@ -34,6 +34,15 @@ body {
   font-size: 32px;
   font-weight: bold;
 }
+.uvGreen{
+  background-color: lightgreen;
+}
+.uvYellow{
+  background-color: yellow;
+}
+.uvRed{
+  background-color: lightcoral;
+}
 #icon{
   height: 60px;
   widows: 60px;

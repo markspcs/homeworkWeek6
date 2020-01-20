@@ -23,12 +23,13 @@ $(searchBtn).click(function () {
   
   console.log(searchCity);
 })
-$(".list-group-item").click(function () {
+//$(".list-group-item").click(function () {
+$("div").on("click", "li", function() {
   let clickedCity = $(this).attr("city-search");
   console.log(clickedCity);
   getWeather(clickedCity);
   getForecast(clickedCity);
-})
+});
 //////////////////////////////////////////
 //orders, and dedups and stores array of cities
 function orderCities(city){

@@ -9,10 +9,8 @@ const imgDir = "./images/";
 var city = "kansas+city"
 var searchBox = $("#searchBox");
 var searchBtn = $("#searchBtn");
-//var storedCities = [];
 var storedItems = JSON.parse(localStorage.getItem("searchedCities"));
 var storedCities = storedItems ? storedItems : [];
-console.log(storedCities);
 writeStoredCities(storedCities);
 
 $(searchBtn).click(function () {
@@ -20,26 +18,19 @@ $(searchBtn).click(function () {
   getWeather(searchCity);
   getForecast(searchCity);
   orderCities(searchCity);
-  
-  console.log(searchCity);
 })
 //$(".list-group-item").click(function () {
 $("div").on("click", "li", function() {
   let clickedCity = $(this).attr("city-search");
-  console.log(clickedCity);
   getWeather(clickedCity);
   getForecast(clickedCity);
 });
 //////////////////////////////////////////
 //orders, and dedups and stores array of cities
 function orderCities(city){
-  console.log(city);
   let indexed = storedCities.indexOf(city);
-  console.log(indexed);
   if (indexed < 0) {
     storedCities.unshift(city);
-
-    console.log("not stored");
   }
   else {
     storedCities.splice(indexed, 1);
@@ -48,14 +39,12 @@ function orderCities(city){
   localStorage.setItem("searchedCities", JSON.stringify(storedCities));
   $(".list-group").empty();
   writeStoredCities(storedCities);
-  //console.log();
 }
 ////////////////////////////////////////////
 // writes left column of prevouis stored cities
 function writeStoredCities(storedCities){
 
   storedCities.forEach(function(city){
-  //console.log(storedCities);
   $(".list-group").append("<li class='list-group-item' city-search='" + city + "'" + ">" + city + "</li>");
   });
 }
@@ -66,8 +55,6 @@ function forecastWeather(forecast) {
   let day = dateObj.getDate();
   let month = dateObj.getMonth() + 1;
   let year = dateObj.getFullYear();
-  console.log(day + " " + month + " " + year);
-  console.log(forecast);
   
   let fcDiv = $("<div>");
   let p = $("<p>");
@@ -88,7 +75,6 @@ function getForecast(city) {
     method: "GET"
   })
     .then(function (response) {
-      //forecastWeather(response.list);
       response.list.shift();
       $(".forecastBoxes").empty();
       response.list.forEach(forecastWeather);
@@ -116,13 +102,8 @@ function currentWeather(weatherObj) {
   $("#temp").html("Temperature: " + fahrTemp + " &#8457; ");
   $("#humidity").html("Humidity: " + humidity + "%");
   $("#wind").html("Wind Speed: " + wind + " MPH");
-  //$("#uv").append("followUp");
-  console.log(city + " " + lat + " " + long + " " + fahrTemp + " " + humidity + " " + month + "/" + day + "/" + year);
   let uvObj = getUv(lat, long);
   uvObj.done(uvIndex => {$("#uv").html(uvIndex.value);colorUv(uvIndex.value) });
-  console.log(indexVal);
-  //console.log(promis.then);
-  //$("#uv").append(getUv(lat, long));
   return [lat, long];
 }
 //////////////////////////////////
@@ -143,7 +124,7 @@ function colorUv(uvValue){
 //This returns the promise of the called uv site
 function getUv(lat, lon) {
   let site = uvSite + "&lat=" + lat + "&lon=" + lon;
-  console.log(site);
+  //console.log(site);
   return $.ajax({
     url: site,
     method: "GET"
@@ -164,7 +145,7 @@ function getWeather(city) {
   })
     // We store all of the retrieved data inside of an object called "response"
     .then(function (response) {
-      console.log(response);
+      //console.log(response);
       var latL = currentWeather(response);
     })
 
